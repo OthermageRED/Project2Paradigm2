@@ -139,27 +139,36 @@ gen_map(N, Map, R1,R2,C1,C2,NewMap) :-
     gen_map(N2, Map3, R1_2,R2,C1,C2,NewMap).
 
 display_map(Map) :-
-    Map = [Row|_], length(Row,L),
-    write('    ▐'),display_line(L,'▁▁'),write('▍'),nl,
+    Map = [Row|_],
+    length(Row, L),
+    write('   +'), display_line(L, '--'), write('+'), nl,
     display_rows(Map),
-    write('    ▐'),display_line(L,'▔▔'),write('▍'),nl.
+    write('   +'), display_line(L, '--'), write('+'), nl.
 
 display_rows([]).
 display_rows([Row|T]) :-
-    write('    ▐'),
+    write('   |'),
     display_row(Row),
-    write('▍'),nl,
+    write('|'), nl,
     display_rows(T).
 
 display_row([]).
-display_row([H|T]) :- display_symbol(H), display_row(T).
+display_row([H|T]) :-
+    display_symbol(H),
+    display_row(T).
 
-display_symbol(n) :- write('░░'), !.
-display_symbol(f) :- write('  '), !.
-display_symbol(w) :- write('██'), !.
-display_symbol(X) :- write(X), write(' ').
+display_symbol(n) :- write('..'), !.   % unknown/unused
+display_symbol(f) :- write('  '), !.   % floor
+display_symbol(w) :- write('[]'), !.   % wall
+display_symbol(s) :- write('S '), !.   % start
+display_symbol(e) :- write('E '), !.   % exit
+display_symbol(X) :- write(X), write(' '). % fallback
 
-display_line(0,_).
-display_line(N,V) :- N>0, N2 is N-1, write(V), display_line(N2,V).
+display_line(0, _).
+display_line(N, V) :-
+    N > 0,
+    N1 is N - 1,
+    write(V),
+    display_line(N1, V).
 
 show_random_map(N,R,C) :- gen_map(N,R,C,M),display_map(M).
