@@ -172,3 +172,9 @@ display_line(N, V) :-
     display_line(N1, V).
 
 show_random_map(N,R,C) :- gen_map(N,R,C,M),display_map(M).
+
+
+% Finds the coordinate of the start cell 's'.
+find_start(Map, StartCoord) :-    
+    find_value(Map, s, 0, 0, [], [StartCoord|_]).
+

@@ -36,3 +36,28 @@ For built-in help, use ?- help(Topic). or ?- apropos(Word).
    |        []  []  []  |
    |    []        S []  |
    +--------------------+
+
+
+   11/22/2026   8:53PM
+
+   First need to find the start point. Added a find_start predicate using the prolog method find_value to search for the "s".
+
+   gen_map(4,10,10,M),display_map(M),find_start(M,StartCoord).
+Correct to: "test:display_map(M)"? yes
+Correct to: "test:find_start(M,StartCoord)"? yes
+   +--------------------+
+   |        []          |
+   |[][][]  []    []    |
+   |        []  [][][][]|
+   |    []  []  []      |
+   |    []  []        S |
+   |[]  [][][]  []      |
+   |    []  E   []  [][]|
+   |        []          |
+   |    []  []    []    |
+   |    []  []          |
+   +--------------------+
+M = [[f, f, f, f, w, f, f, f|…], [w, w, w, f, w, f, f|…], [f, f, f, f, w, f|…], [f, f, w, f, w|…], [f, f, w, f|…], [w, f, w|…], [f, f|…], [f|…], […|…]|…],
+StartCoord = coord(4, 9)
+
+
