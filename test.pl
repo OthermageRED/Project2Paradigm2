@@ -178,3 +178,15 @@ show_random_map(N,R,C) :- gen_map(N,R,C,M),display_map(M).
 find_start(Map, StartCoord) :-    
     find_value(Map, s, 0, 0, [], [StartCoord|_]).
 
+% True if the coord is inside the allowed maze. Used to check if we go outside the boundaries
+
+inside_maze(Map, coord(R,C)) :-
+    R >= 0,
+    C >= 0,
+    length(Map, RMax),
+    R < RMax,
+    Map = [Row|_],
+    length(Row, CMax),
+    C < CMax.
+
+

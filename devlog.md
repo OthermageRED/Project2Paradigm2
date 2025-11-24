@@ -61,3 +61,8 @@ M = [[f, f, f, f, w, f, f, f|…], [w, w, w, f, w, f, f|…], [f, f, f, f, w, f|
 StartCoord = coord(4, 9)
 
 
+11/24/2025 5:23PM
+
+Added a helper predicate to see if we are inside the maze, once we start walking. Not connected yet.
+
+
