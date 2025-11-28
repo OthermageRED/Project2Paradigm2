@@ -189,4 +189,22 @@ inside_maze(Map, coord(R,C)) :-
     length(Row, CMax),
     C < CMax.
 
+find_exit(Map, Actions) :-
+    find_start(Map, StartCoord),
+    apply_actions(Map, StartCoord, Actions, EndCoord),
+    cell(Map, EndCoord, e).
 
+
+apply_actions(_, Coord, [], Coord).
+apply_actions(Map, Coord, [Action|Rest], FinalCoord) :-
+    step(Action, Coord, NextCoord),
+    cell(Map, NextCoord, V),
+    (V = f ; V = e),             % only allowed onto f or e
+    apply_actions(Map, NextCoord, Rest, FinalCoord).
+
+
+% Translate an action into a new coordinate.
+step(left,  coord(R, C), coord(R, C1)) :- C1 is C - 1.
+step(right, coord(R, C), coord(R, C1)) :- C1 is C + 1.
+step(up,    coord(R, C), coord(R1, C)) :- R1 is R - 1.
+step(down,  coord(R, C), coord(R1, C)) :- R1 is R + 1.

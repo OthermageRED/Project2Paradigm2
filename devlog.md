@@ -66,3 +66,8 @@ StartCoord = coord(4, 9)
 Added a helper predicate to see if we are inside the maze, once we start walking. Not connected yet.
 
 
+11/28/2025 11:26PM
+
+First attempt at FindExit. Takes a list of actions, and performs them. Idea is for Prolog to figure out what the actions are.
+Just grinds forever.
+
