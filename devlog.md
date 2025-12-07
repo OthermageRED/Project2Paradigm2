@@ -71,3 +71,9 @@ Added a helper predicate to see if we are inside the maze, once we start walking
 First attempt at FindExit. Takes a list of actions, and performs them. Idea is for Prolog to figure out what the actions are.
 Just grinds forever.
 
+
+12/07/2025 11:17AM 
+
+find_exit now searches for the exit by searching for nearest neighbors and using recursion. We start at the start cell.
+Then visit all neighbors that are valid but keep track of where we have been (stored in the Visited list). 
+

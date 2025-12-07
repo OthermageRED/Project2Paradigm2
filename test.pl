@@ -9,7 +9,7 @@
 %
 % Example Usage: ?- gen_map(4, 10,10,M), find_exit(M,A).
 
-:- module(test,[gen_map/4,show_random_map/3]).
+:- module(test,[gen_map/4,show_random_map/3,display_map/1,find_exit/2]).
 
 make_base(0,_,[]).
 make_base(N,Cols,[Row|T]) :-
@@ -174,10 +174,6 @@ display_line(N, V) :-
 show_random_map(N,R,C) :- gen_map(N,R,C,M),display_map(M).
 
 
-% Finds the coordinate of the start cell 's'.
-find_start(Map, StartCoord) :-    
-    find_value(Map, s, 0, 0, [], [StartCoord|_]).
-
 % True if the coord is inside the allowed maze. Used to check if we go outside the boundaries
 
 inside_maze(Map, coord(R,C)) :-
@@ -189,22 +185,68 @@ inside_maze(Map, coord(R,C)) :-
     length(Row, CMax),
     C < CMax.
 
+
+
+
+
+% Finds the coordinate of the start cell 's'.
+find_start(Map, StartCoord) :-    
+    find_value(Map, s, 0, 0, [], [StartCoord|_]).
+
+
+% find_exit(+Map, +Actions)
+% Succeeds if starting from 's' and following Actions ends on a cell 'e'.
+
+
+
 find_exit(Map, Actions) :-
-    find_start(Map, StartCoord),
-    apply_actions(Map, StartCoord, Actions, EndCoord),
-    cell(Map, EndCoord, e).
+    find_start(Map, Start), % path starts from the starting point
+    search_neighbors(Map, [node(Start, [])], [Start], Actions).
 
 
-apply_actions(_, Coord, [], Coord).
-apply_actions(Map, Coord, [Action|Rest], FinalCoord) :-
-    step(Action, Coord, NextCoord),
-    cell(Map, NextCoord, V),
-    (V = f ; V = e),             % only allowed onto f or e
-    apply_actions(Map, NextCoord, Rest, FinalCoord).
+%perform the actions
+
+go(left,  coord(R, C), coord(R, C1)) :- C1 is C - 1.
+go(right, coord(R, C), coord(R, C1)) :- C1 is C + 1.
+go(up,    coord(R, C), coord(R1, C)) :- R1 is R - 1.
+go(down,  coord(R, C), coord(R1, C)) :- R1 is R + 1.
+
+% search_neighbors list: list of node(Coord, PathSoFarReversed)
+% Visited: list of coordinates already explored.
 
 
-% Translate an action into a new coordinate.
-step(left,  coord(R, C), coord(R, C1)) :- C1 is C - 1.
-step(right, coord(R, C), coord(R, C1)) :- C1 is C + 1.
-step(up,    coord(R, C), coord(R1, C)) :- R1 is R - 1.
-step(down,  coord(R, C), coord(R1, C)) :- R1 is R + 1.
+%We are done when the next coord in the list is the exit
+search_neighbors(Map, [node(Coord, PathSoFar)|_], _, Actions) :-
+    cell(Map, Coord, e),
+    reverse(PathSoFar, Actions).
+
+%otherwise, search all the neighbors for an open cell or exit. 
+
+
+search_neighbors(Map, [node(Coord, PathSoFar)|Remaining], Visited, Actions) :-
+    findall(node(NextCoord, [Act|PathSoFar]),
+            ( action(Act),   %check that the action is inside the maze, is to a floor cell or exit cell, and has not been visited before
+              go(Act, Coord, NextCoord),
+              inside_maze(Map, NextCoord),
+              cell(Map, NextCoord, V),
+              (V = f ; V = e),
+              \+ member(NextCoord, Visited)
+            ),
+            NewNodes),
+    extract_coords(NewNodes, NewCoords),
+    append(Remaining, NewNodes, List2), %put at the end of the list, so we find the shortest path by taking off the front of the list
+    append(Visited, NewCoords, Visited2), %make sure we note where we have been so we don't come this way again.
+    search_neighbors(Map, List2, Visited2, Actions). 
+
+% Available movement actions
+action(up).
+action(down).
+action(left).
+action(right).
+
+% Helper to pull coords out of node/2 structures
+extract_coords([], []).
+extract_coords([node(C,_)|T], [C|CT]) :-
+    extract_coords(T, CT).
+
+
